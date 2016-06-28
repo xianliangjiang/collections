@@ -1,0 +1,49 @@
+#!/usr/bin/perl -w
+
+use strict;
+use LWP::UserAgent;
+use HTTP::Request::Common;
+
+$ENV{'SPROUT_MODEL_IN'} = '/home/ubuntu/PA3/alfalfa/src/examples/sprout.model';
+
+my $receiver_pid = fork;
+
+if ( $receiver_pid < 0 ) {
+  die qq{$!};
+} elsif ( $receiver_pid == 0 ) {
+  # child
+  exec q{/home/ubuntu/PA3/alfalfa/src/examples/sproutbt2} or die qq{$!};
+}
+
+chomp( my $prefix = qx{dirname `which mm-link`} );
+my $tracedir = $prefix . q{/../share/mahimahi/traces};
+
+# run the sender inside a linkshell and a delayshell
+my @command = qw{mm-delay 20 mm-link UPLINK DOWNLINK};
+
+# display livegraphs if we seem to be running under X
+if ( defined $ENV{ 'DISPLAY' } ) {
+    push @command, qw{--meter-uplink --meter-uplink-delay};
+}
+
+push @command, qw{ --uplink-queue=red --downlink-queue=red --uplink-queue-args=min_bytes=375000max_bytes=1125000drop_percentage=10 --downlink-queue-args=min_bytes=375000max_bytes=1125000drop_percentage=10 --once --uplink-log=/home/ubuntu/PA3/logs/sprout_verizon_log -- sh -c};
+
+push @command, q{/home/ubuntu/PA3/alfalfa/src/examples/sproutbt2 $MAHIMAHI_BASE 60001};
+
+die unless $command[ 3 ] eq "UPLINK";
+$command[ 3 ] = qq{$tracedir/Verizon-LTE-driving.down};
+
+die unless $command[ 4 ] eq "DOWNLINK";
+$command[ 4 ] = qq{$tracedir/Verizon-LTE-driving.up};
+
+system @command;
+
+# kill the receiver
+kill 'INT', $receiver_pid;
+
+print "\n";
+
+# analyze performance locally
+system q{mm-throughput-graph 500 /home/ubuntu/PA3/logs/sprout_verizon_log > /dev/null};
+
+print "\n";

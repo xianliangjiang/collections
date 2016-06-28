@@ -1,0 +1,344 @@
+#!/usr/bin/env perl
+
+use warnings;
+use strict;
+use POSIX;
+
+sub usage
+{
+  die qq{Usage: $0 MS_PER_BIN [sprout filename] [verus filename]\n};
+}
+
+if ( scalar @ARGV != 3 ) {
+  usage;
+}
+
+my $MS_PER_BIN = shift;
+
+if ( $MS_PER_BIN !~ m{^\d+$} ) {
+  usage;
+}
+
+sub ms_to_bin {
+  return int( $_[0] / $MS_PER_BIN );
+}
+
+sub bin_to_seconds {
+  return sprintf q{%.3f}, $_[0] * $MS_PER_BIN / 1000.0;
+}
+
+my $file_counter = 1;
+
+my ( %sprout_capacity, %sprout_arrivals, %sprout_departures, %verus_capacity, %verus_arrivals, %verus_departures );
+
+my $sprout_first_timestamp = undef;
+my $sprout_last_timestamp = undef;
+my $sprout_base_timestamp = undef;
+my $sprout_capacity_sum;
+my $sprout_arrival_sum;
+my $sprout_departure_sum;
+my @sprout_delays;
+my %sprout_signal_delay;
+
+my $verus_first_timestamp = undef;
+my $verus_last_timestamp = undef;
+my $verus_base_timestamp = undef;
+my $verus_capacity_sum;
+my $verus_arrival_sum;
+my $verus_departure_sum;
+my @verus_delays;
+my %verus_signal_delay;
+
+LINE: while ( <> ) {
+  chomp;
+
+  if ( eof ) {
+      # $file_counter++;
+      printf "EOF\n";
+      # printf $file_counter;
+      # printf "\n";
+  }
+      
+  #  $file_counter++ if eof;
+  
+  
+  if ( m{^# base timestamp: (\d+)} ) {
+      printf "base timestamp label\n";
+      if ( defined $sprout_base_timestamp ) {
+	  $file_counter = 2;
+	  $verus_base_timestamp = $1;
+	  printf $verus_base_timestamp;
+	  printf "\n";
+      } else {
+	  $sprout_base_timestamp = $1;
+      }
+      next LINE;
+  } elsif ( m{^#} ) {
+    next LINE;
+  }
+
+  # parse and validate line
+  my ( $timestamp, $event_type, $num_bytes, $delay ) = split /\s+/, $_;
+
+  if ( not defined $num_bytes ) {
+    die q{Format: timestamp event_type num_bytes [delay]};
+  }
+
+  if ( $timestamp !~ m{^\d+$} ) {
+    die qq{Invalid timestamp: $timestamp};
+  }
+
+  if ( $num_bytes !~ m{^\d+$} ) {
+    die qq{Invalid byte count: $num_bytes};
+  }
+
+  if ( $file_counter == 1) {
+      if ( not defined $sprout_base_timestamp ) {
+	  die "sprout logfile is missing base timestamp";
+      }
+  } elsif ( $file_counter == 2) {
+      if ( not defined $verus_base_timestamp ) {
+	  die "verus logfile is missing base timestamp";
+      }
+  }
+
+  if ( $file_counter == 1) {
+      $timestamp -= $sprout_base_timestamp; # correct for startup time variation
+  } elsif ( $file_counter == 2) {
+      $timestamp -= $verus_base_timestamp;
+  }
+
+  if ( $file_counter == 1) {
+      if ( not defined $sprout_last_timestamp ) {
+	  $sprout_last_timestamp = $sprout_first_timestamp = $timestamp;
+      }
+  } elsif ( $file_counter == 2) {
+      if ( not defined $verus_last_timestamp ) {
+	  $verus_last_timestamp = $verus_first_timestamp = $timestamp;
+      }      
+  }
+
+  if ( $file_counter == 1) {
+      $sprout_last_timestamp = max( $timestamp, $sprout_last_timestamp );
+  } elsif ( $file_counter == 2) {
+      $verus_last_timestamp = max( $timestamp, $verus_last_timestamp );
+  }
+
+  my $num_bits = $num_bytes * 8;
+  my $bin = ms_to_bin( $timestamp );
+
+  # process the event
+  if ( $event_type eq q{+} ) {
+      if ( $file_counter == 1) {
+	  $sprout_arrivals{ $bin } += $num_bits;
+	  $sprout_arrival_sum += $num_bits;
+      } elsif ( $file_counter == 2) {
+	  $verus_arrivals{ $bin } += $num_bits;
+	  $verus_arrival_sum += $num_bits;
+      }
+  } elsif ( $event_type eq q{#} ) {
+      if ( $file_counter == 1) {
+	  $sprout_capacity{ $bin } += $num_bits;
+	  $sprout_capacity_sum += $num_bits;
+      } elsif ( $file_counter == 2) {
+	  $verus_capacity{ $bin } += $num_bits;
+	  $verus_capacity_sum += $num_bits;
+      }
+  } elsif ( $event_type eq q{-} ) {
+    if ( not defined $delay ) {
+      die q{Departure format: timestamp - num_bytes delay};
+    }
+    if ( $file_counter == 1) {
+	$sprout_departures{ $bin } += $num_bits;
+    } elsif ( $file_counter == 2) {
+	$verus_departures{ $bin } += $num_bits;
+    }
+
+    if ( $delay < 0 ) {
+	die qq{Invalid delay: $delay};
+    }
+
+    if ( $timestamp - $delay < 0 ) {
+	die qq{Invalid timestamp and delay: ts=$timestamp, delay=$delay};
+    }
+
+    if ( $file_counter == 1) {
+	push @sprout_delays, $delay;
+	$sprout_departure_sum += $num_bits;
+	$sprout_signal_delay{ $timestamp - $delay } = min( $delay,
+							   (defined $sprout_signal_delay{ $timestamp - $delay })
+							   ? $sprout_signal_delay{ $timestamp - $delay }
+							   : POSIX::DBL_MAX );
+    } elsif ( $file_counter == 2) {
+	push @verus_delays, $delay;
+	$verus_departure_sum += $num_bits;
+	$verus_signal_delay{ $timestamp - $delay } = min( $delay,
+							   (defined $verus_signal_delay{ $timestamp - $delay })
+							   ? $verus_signal_delay{ $timestamp - $delay }
+							   : POSIX::DBL_MAX );
+    }
+  } else {
+    die qq{Unknown event type: $event_type};
+  }
+}
+
+sub min {
+  my $minval = POSIX::DBL_MAX;
+
+  for ( @_ ) {
+    if ( $_ < $minval ) {
+      $minval = $_;
+    }
+  }
+
+  return $minval;
+}
+
+sub max {
+  my $maxval = - POSIX::DBL_MAX;
+
+  for ( @_ ) {
+    if ( $_ > $maxval ) {
+      $maxval = $_;
+    }
+  }
+
+  return $maxval;
+}
+
+if ( not defined $sprout_first_timestamp ) {
+    die q{Sprout must have at least one event};
+}
+if ( not defined $verus_first_timestamp ) {
+    die q{Verus must have at least one event};
+}
+
+# calculate statistics
+my $sprout_duration = ($sprout_last_timestamp - $sprout_first_timestamp) / 1000.0;
+my $sprout_average_capacity = ($sprout_capacity_sum / $sprout_duration) / 1000000.0;
+my $sprout_average_ingress = ($sprout_arrival_sum / $sprout_duration) / 1000000.0;
+my $sprout_average_throughput = ($sprout_departure_sum / $sprout_duration) / 1000000.0;
+
+my $verus_duration = ($verus_last_timestamp - $verus_first_timestamp) / 1000.0;
+my $verus_average_capacity = ($verus_capacity_sum / $verus_duration) / 1000000.0;
+my $verus_average_throughput = ($verus_arrival_sum / $verus_duration) / 1000000.0;
+my $verus_average_egress = ($verus_departure_sum / $verus_duration) / 1000000.0;
+
+if ( scalar @sprout_delays == 0 ) {
+  die q{Sprout must have at least one departure event};
+}
+
+if ( scalar @verus_delays == 0 ) {
+    die q{Verus must have at least one departure event};
+}
+
+@sprout_delays = sort { $a <=> $b } @sprout_delays;
+
+@verus_delays = sort { $a <=> $b } @verus_delays;
+
+my $sprout_pp95 = $sprout_delays[ 0.95 * scalar @sprout_delays ];
+my $verus_pp95 = $verus_delays [ 0.95 * scalar @verus_delays ];
+
+# measure signal delay every millisecond
+# = minimum time for a message created at time t to get to receiver
+my @sprout_signal_delay_samples = sort { $a <=> $b } keys %sprout_signal_delay;
+my @verus_signal_delay_samples = sort { $a <=> $b } keys %verus_signal_delay;
+
+for ( my $ts = $sprout_signal_delay_samples[ -1 ]; $ts >= $sprout_signal_delay_samples[ 0 ]; $ts-- ) {
+  if ( not defined $sprout_signal_delay{ $ts } ) {
+    $sprout_signal_delay{ $ts } = $sprout_signal_delay{ $ts + 1 } + 1;
+  }
+}
+
+for ( my $ts = $verus_signal_delay_samples[ -1 ]; $ts >= $verus_signal_delay_samples[ 0 ]; $ts-- ) {
+    if ( not defined $verus_signal_delay{ $ts } ) {
+	$verus_signal_delay{ $ts } = $verus_signal_delay{ $ts + 1 } + 1;
+    }
+}
+
+my @signal_sprout_delays = sort { $a <=> $b } values %sprout_signal_delay;
+my $sprout_pp95s = $signal_sprout_delays[ 0.95 * scalar @signal_sprout_delays ];
+
+my @signal_verus_delays = sort { $a <=> $b } values %verus_signal_delay;
+my $verus_pp95s = $signal_verus_delays[ 0.95 * scalar @signal_verus_delays ];
+
+printf STDERR "Sprout Statistics\n";
+printf STDERR qq{Average capacity: %.2f Mbits/s\n}, $sprout_average_capacity;
+printf STDERR qq{Average throughput: %.2f Mbits/s (%.1f%% utilization)\n}, $sprout_average_throughput, 100.0 * $sprout_average_throughput / $sprout_average_capacity;
+printf STDERR qq{95th percentile per-packet queueing delay: %.0f ms\n}, $sprout_pp95;
+printf STDERR qq{95th percentile signal delay: %.0f ms\n}, $sprout_pp95s;
+
+printf STDERR "\nVerus Statistics\n";
+printf STDERR qq{Average capacity: %.2f Mbits/s\n}, $verus_average_capacity;
+printf STDERR qq{Average throughput: %.2f Mbits/s (%.1f%% utilization)\n}, $verus_average_throughput, 100.0 * $verus_average_throughput / $verus_average_capacity;
+printf STDERR qq{95th percentile per-packet queueing delay: %.0f ms\n}, $verus_pp95;
+printf STDERR qq{95th percentile signal delay: %.0f ms\n}, $verus_pp95s;
+
+# make graph
+my $sprout_earliest_bin = min( keys %sprout_arrivals, keys %sprout_capacity, keys %sprout_departures );
+my $sprout_latest_bin = max( keys %sprout_arrivals, keys %sprout_capacity, keys %sprout_departures );
+
+my $verus_earliest_bin = min( keys %verus_arrivals, keys %verus_capacity, keys %verus_departures );
+my $verus_latest_bin = max( keys %verus_arrivals, keys %verus_capacity, keys %verus_departures );
+
+my $sprout_current_buffer_occupancy = 0;
+my $verus_current_buffer_occupancy = 0;
+
+sub default {
+  return defined $_[ 0 ] ? $_[ 0 ] : 0;
+}
+
+open GNUPLOT, q{| gnuplot} or die;
+
+print GNUPLOT <<END;
+set xlabel "time (s)"
+set ylabel "throughput (Mbits/s)"
+set key center outside top horizontal
+set style fill solid 0.2 noborder
+set terminal svg size 1024,560 fixed  fname 'Arial'  fsize 12 rounded solid mouse standalone name "Throughput"
+set output "/dev/stdout"
+END
+
+printf GNUPLOT qq{plot [%f:%f] "sprout.dat" using 1:2 title "Capacity (mean %.2f Mbits/s)" with filledcurves above x1 lw 0.5, "sprout.dat" using 1:4 with lines lc rgb "#ff6040" lw 2 title "Sprout throughput (mean %.2f Mbits/s)", "verus.dat" using 1:3 with lines lc rgb "#003B19" lw 2 title "Verus throughput (mean %.2f Mbits/s)"\n}, $sprout_first_timestamp / 1000.0, $sprout_last_timestamp / 1000.0, $sprout_average_capacity, $sprout_average_throughput, $verus_average_throughput;
+
+my $sprout_output;
+open(my $sprout_fh, '>', 'sprout.dat');
+for ( my $bin = $sprout_earliest_bin; $bin <= $sprout_latest_bin; $bin++ ) {
+    my $t = bin_to_seconds( $bin );
+    my ( $cap, $sprout_arr, $sprout_dep ) = map { (default $_) / ($MS_PER_BIN / 1000.0) / 1000000.0 } ( $sprout_capacity{ $bin }, $sprout_arrivals{ $bin }, $sprout_departures{ $bin } );
+
+    $sprout_current_buffer_occupancy += default $sprout_arrivals{ $bin };
+    $sprout_current_buffer_occupancy -= default $sprout_departures{ $bin };
+
+    $sprout_output .= qq{$t $cap $sprout_arr $sprout_dep $sprout_current_buffer_occupancy\n};
+    print $sprout_fh qq{$t $cap $sprout_arr $sprout_dep $sprout_current_buffer_occupancy\n};
+}
+close $sprout_fh;
+
+my $verus_output;
+open(my $verus_fh, '>', 'verus.dat');
+for ( my $bin = $verus_earliest_bin; $bin <= $verus_latest_bin; $bin++ ) {
+    my $t = bin_to_seconds( $bin );
+    my ( $cap, $verus_arr, $verus_dep ) = map { (default $_) / ($MS_PER_BIN / 1000.0) / 1000000.0 } ( $verus_capacity{ $bin }, $verus_arrivals{ $bin }, $verus_departures{ $bin } );
+
+    $verus_current_buffer_occupancy += default $verus_arrivals{ $bin };
+    $verus_current_buffer_occupancy -= default $verus_departures{ $bin };
+
+    $verus_output .= qq{$t $cap $verus_arr $verus_dep $verus_current_buffer_occupancy\n};
+    print $verus_fh qq{$t $cap $verus_arr $verus_dep $verus_current_buffer_occupancy\n};
+}
+close $verus_fh;
+
+# print GNUPLOT $sprout_output;
+# print GNUPLOT qq{\ne\n};
+# print GNUPLOT $sprout_output;
+# print GNUPLOT qq{\ne\n};
+# print GNUPLOT $sprout_output;
+
+# print GNUPLOT $verus_output;
+# print GNUPLOT qq{\ne\n};
+# print GNUPLOT $verus_output;
+# print GNUPLOT qq{\ne\n};
+# print GNUPLOT $verus_output;
+
+close GNUPLOT or die qq{$!};

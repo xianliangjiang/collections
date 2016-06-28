@@ -1,0 +1,26 @@
+protocol	downlink	uplink	throughput	delay	avg_capacity
+SPROUT	 Verizon-LTE-short.down	 Verizon-LTE-short.up	3.55	88	5.04
+SPROUT	 ATT-LTE-driving.down	 ATT-LTE-driving.up	3.50	151	5.19
+SPROUT	 TMobile-UMTS-driving.down	 TMobile-UMTS-driving.up	0.97	1139	2.03
+SPROUT	 Verizon-EVDO-driving.down	 Verizon-EVDO-driving.up	0.24	2121	0.52
+SPROUT	 Verizon-LTE-driving.down	 Verizon-LTE-driving.up	6.11	142	9.74
+TCP VEGAS	 Verizon-LTE-short.down	 Verizon-LTE-short.up	4.23	534	5.04
+TCP VEGAS	 ATT-LTE-driving.down	 ATT-LTE-driving.up	2.37	502	5.19
+TCP VEGAS	 TMobile-UMTS-driving.down	 TMobile-UMTS-driving.up	1.55	2309	2.03
+TCP VEGAS	 Verizon-EVDO-driving.down	 Verizon-EVDO-driving.up	0.35	2718	0.52
+TCP VEGAS	 Verizon-LTE-driving.down	 Verizon-LTE-driving.up	6.63	204	9.91
+TCP CUBIC	 Verizon-LTE-short.down	 Verizon-LTE-short.up	5.03	7925	5.04
+TCP CUBIC	 ATT-LTE-driving.down	 ATT-LTE-driving.up	5.18	9461	5.19
+TCP CUBIC	 TMobile-UMTS-driving.down	 TMobile-UMTS-driving.up	2.02	28411	2.03
+TCP CUBIC	 Verizon-EVDO-driving.down	 Verizon-EVDO-driving.up	0.52	106219	0.52
+TCP CUBIC	 Verizon-LTE-driving.down	 Verizon-LTE-driving.up	9.83	11196	9.91
+TCP HYBLA	 Verizon-LTE-short.down	 Verizon-LTE-short.up	5.02	4724	5.04
+TCP HYBLA	 ATT-LTE-driving.down	 ATT-LTE-driving.up	5.18	8756	5.19
+TCP HYBLA	 TMobile-UMTS-driving.down	 TMobile-UMTS-driving.up	2.02	29189	2.03
+TCP HYBLA	 Verizon-EVDO-driving.down	 Verizon-EVDO-driving.up	0.52	78124	0.52
+TCP HYBLA	 Verizon-LTE-driving.down	 Verizon-LTE-driving.up	9.84	6553	9.91
+TCP BIC	 Verizon-LTE-short.down	 Verizon-LTE-short.up	5.02	10477	5.04
+TCP BIC	 ATT-LTE-driving.down	 ATT-LTE-driving.up	5.18	11744	5.19
+TCP BIC	 TMobile-UMTS-driving.down	 TMobile-UMTS-driving.up	2.02	24082	2.03
+TCP BIC	 Verizon-EVDO-driving.down	 Verizon-EVDO-driving.up	0.52	80994	0.52
+TCP BIC	 Verizon-LTE-driving.down	 Verizon-LTE-driving.up	9.84	10028	9.91

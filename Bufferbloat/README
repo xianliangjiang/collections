@@ -1,0 +1,7 @@
+1, When queue length is 20, the average fetch time is 4.62s, the standard deviation is 0.43s. When queue length is 100, the average fetch time is 10.96s, the standard deviation is 3.31s. This is because the most time that a packet spends to transfer from one host to the other is waiting in the queue. So the longer the queue, the more fetch time.
+
+2, The maximun transmit queue length reported by ifconfig is 1000. Maximun waiting time is 1000 packets * 1500 Bytes / 100 Mb/s = 0.12 s
+
+3, From the figures, we can see that the rtt reported by ping is linear to the queue size. rtt_ping = RTT + queue_size / bw_net
+
+4, One way to mitigate the bufferbloat problem would be using smaller buffers. A second way would be using different buffers for defferent classes of traffic. 

@@ -1,0 +1,360 @@
+SPROUT
+Down linkfile: Verizon-LTE-short.down
+Up linkfile: Verizon-LTE-short.up
+Making serverReading model from /home/danae/cs244pa3/alfalfa/src/examples/sprout.model...[tick 0] [tick 1] [tick 2] [tick 3] [tick 4] [tick 5] [tick 6] [tick 7]  done.
+Port bound is 60001
+Making client 60001
+Reading model from /home/danae/cs244pa3/alfalfa/src/examples/sprout.model...[tick 0] [tick 1] [tick 2] [tick 3] [tick 4] [tick 5] [tick 6] [tick 7]  done.
+Port bound is 0
+Looping...
+Server now attached to client at 100.64.0.2:32864
+Looping...
+Killed
+Average capacity: 5.04 Mbits/s
+Average throughput: 3.55 Mbits/s (70.4% utilization)
+95th percentile per-packet queueing delay: 66 ms
+95th percentile signal delay: 88 ms
+
+ done.
+
+
+SPROUT
+Down linkfile: ATT-LTE-driving.down
+Up linkfile: ATT-LTE-driving.up
+Making serverReading model from /home/danae/cs244pa3/alfalfa/src/examples/sprout.model...[tick 0] [tick 1] [tick 2] [tick 3] [tick 4] [tick 5] [tick 6] [tick 7]  done.
+Port bound is 60001
+Making client 60001
+Reading model from /home/danae/cs244pa3/alfalfa/src/examples/sprout.model...[tick 0] [tick 1] [tick 2] [tick 3] [tick 4] [tick 5] [tick 6] [tick 7]  done.
+Port bound is 0
+Looping...
+Server now attached to client at 100.64.0.2:44760
+Looping...
+Killed
+Average capacity: 5.19 Mbits/s
+Average throughput: 3.50 Mbits/s (67.4% utilization)
+95th percentile per-packet queueing delay: 62 ms
+95th percentile signal delay: 151 ms
+
+ done.
+
+
+SPROUT
+Down linkfile: TMobile-UMTS-driving.down
+Up linkfile: TMobile-UMTS-driving.up
+Making serverReading model from /home/danae/cs244pa3/alfalfa/src/examples/sprout.model...[tick 0] [tick 1] [tick 2] [tick 3] [tick 4] [tick 5] [tick 6] [tick 7]  done.
+Port bound is 60001
+Making client 60001
+Reading model from /home/danae/cs244pa3/alfalfa/src/examples/sprout.model...[tick 0] [tick 1] [tick 2] [tick 3] [tick 4] [tick 5] [tick 6] [tick 7]  done.
+Port bound is 0
+Looping...
+Server now attached to client at 100.64.0.2:42698
+Looping...
+Killed
+Average capacity: 2.03 Mbits/s
+Average throughput: 0.97 Mbits/s (47.9% utilization)
+95th percentile per-packet queueing delay: 60 ms
+95th percentile signal delay: 1139 ms
+
+ done.
+
+
+SPROUT
+Down linkfile: Verizon-EVDO-driving.down
+Up linkfile: Verizon-EVDO-driving.up
+Making serverReading model from /home/danae/cs244pa3/alfalfa/src/examples/sprout.model...[tick 0] [tick 1] [tick 2] [tick 3] [tick 4] [tick 5] [tick 6] [tick 7]  done.
+Port bound is 60001
+Making client 60001
+Reading model from /home/danae/cs244pa3/alfalfa/src/examples/sprout.model...[tick 0] [tick 1] [tick 2] [tick 3] [tick 4] [tick 5] [tick 6] [tick 7]  done.
+Port bound is 0
+Looping...
+Server now attached to client at 100.64.0.2:50914
+Looping...
+Killed
+Average capacity: 0.52 Mbits/s
+Average throughput: 0.24 Mbits/s (45.9% utilization)
+95th percentile per-packet queueing delay: 745 ms
+95th percentile signal delay: 2121 ms
+
+ done.
+
+
+SPROUT
+Down linkfile: Verizon-LTE-driving.down
+Up linkfile: Verizon-LTE-driving.up
+Making serverReading model from /home/danae/cs244pa3/alfalfa/src/examples/sprout.model...[tick 0] [tick 1] [tick 2] [tick 3] [tick 4] [tick 5] [tick 6] [tick 7]  done.
+Port bound is 60001
+Making client 60001
+Reading model from /home/danae/cs244pa3/alfalfa/src/examples/sprout.model...[tick 0] [tick 1] [tick 2] [tick 3] [tick 4] [tick 5] [tick 6] [tick 7]  done.
+Port bound is 0
+Looping...
+Server now attached to client at 100.64.0.2:38621
+Looping...
+Killed
+Average capacity: 9.74 Mbits/s
+Average throughput: 6.11 Mbits/s (62.7% utilization)
+95th percentile per-packet queueing delay: 58 ms
+95th percentile signal delay: 142 ms
+
+ done.
+
+
+TCP VEGAS
+Down linkfile: Verizon-LTE-short.down
+Up linkfile: Verizon-LTE-short.up
+Down linkfile: Verizon-LTE-short.down
+Up linkfile: Verizon-LTE-short.up
+Average capacity: 5.04 Mbits/s
+Average throughput: 4.23 Mbits/s (84.0% utilization)
+95th percentile per-packet queueing delay: 230 ms
+95th percentile signal delay: 534 ms
+
+ done.
+
+
+TCP VEGAS
+Down linkfile: ATT-LTE-driving.down
+Up linkfile: ATT-LTE-driving.up
+Down linkfile: ATT-LTE-driving.down
+Up linkfile: ATT-LTE-driving.up
+Average capacity: 5.19 Mbits/s
+Average throughput: 2.37 Mbits/s (45.7% utilization)
+95th percentile per-packet queueing delay: 61 ms
+95th percentile signal delay: 502 ms
+
+ done.
+
+
+TCP VEGAS
+Down linkfile: TMobile-UMTS-driving.down
+Up linkfile: TMobile-UMTS-driving.up
+Down linkfile: TMobile-UMTS-driving.down
+Up linkfile: TMobile-UMTS-driving.up
+Average capacity: 2.03 Mbits/s
+Average throughput: 1.55 Mbits/s (76.5% utilization)
+95th percentile per-packet queueing delay: 75 ms
+95th percentile signal delay: 2309 ms
+
+ done.
+
+
+TCP VEGAS
+Down linkfile: Verizon-EVDO-driving.down
+Up linkfile: Verizon-EVDO-driving.up
+Down linkfile: Verizon-EVDO-driving.down
+Up linkfile: Verizon-EVDO-driving.up
+Average capacity: 0.52 Mbits/s
+Average throughput: 0.35 Mbits/s (67.5% utilization)
+95th percentile per-packet queueing delay: 311 ms
+95th percentile signal delay: 2718 ms
+
+ done.
+
+
+TCP VEGAS
+Down linkfile: Verizon-LTE-driving.down
+Up linkfile: Verizon-LTE-driving.up
+Down linkfile: Verizon-LTE-driving.down
+Up linkfile: Verizon-LTE-driving.up
+Average capacity: 9.91 Mbits/s
+Average throughput: 6.63 Mbits/s (66.9% utilization)
+95th percentile per-packet queueing delay: 84 ms
+95th percentile signal delay: 204 ms
+
+ done.
+
+
+TCP CUBIC
+Down linkfile: Verizon-LTE-short.down
+Up linkfile: Verizon-LTE-short.up
+Down linkfile: Verizon-LTE-short.down
+Up linkfile: Verizon-LTE-short.up
+Average capacity: 5.04 Mbits/s
+Average throughput: 5.03 Mbits/s (99.7% utilization)
+95th percentile per-packet queueing delay: 6735 ms
+95th percentile signal delay: 7925 ms
+
+ done.
+
+
+TCP CUBIC
+Down linkfile: ATT-LTE-driving.down
+Up linkfile: ATT-LTE-driving.up
+Down linkfile: ATT-LTE-driving.down
+Up linkfile: ATT-LTE-driving.up
+Average capacity: 5.19 Mbits/s
+Average throughput: 5.18 Mbits/s (99.9% utilization)
+95th percentile per-packet queueing delay: 7187 ms
+95th percentile signal delay: 9461 ms
+
+ done.
+
+
+TCP CUBIC
+Down linkfile: TMobile-UMTS-driving.down
+Up linkfile: TMobile-UMTS-driving.up
+Down linkfile: TMobile-UMTS-driving.down
+Up linkfile: TMobile-UMTS-driving.up
+Average capacity: 2.03 Mbits/s
+Average throughput: 2.02 Mbits/s (99.9% utilization)
+95th percentile per-packet queueing delay: 20402 ms
+95th percentile signal delay: 28411 ms
+
+ done.
+
+
+TCP CUBIC
+Down linkfile: Verizon-EVDO-driving.down
+Up linkfile: Verizon-EVDO-driving.up
+Down linkfile: Verizon-EVDO-driving.down
+Up linkfile: Verizon-EVDO-driving.up
+Average capacity: 0.52 Mbits/s
+Average throughput: 0.52 Mbits/s (99.9% utilization)
+95th percentile per-packet queueing delay: 50087 ms
+95th percentile signal delay: 106219 ms
+
+ done.
+
+
+TCP CUBIC
+Down linkfile: Verizon-LTE-driving.down
+Up linkfile: Verizon-LTE-driving.up
+Down linkfile: Verizon-LTE-driving.down
+Up linkfile: Verizon-LTE-driving.up
+Average capacity: 9.91 Mbits/s
+Average throughput: 9.83 Mbits/s (99.2% utilization)
+95th percentile per-packet queueing delay: 4646 ms
+95th percentile signal delay: 11196 ms
+
+ done.
+
+
+TCP HYBLA
+Down linkfile: Verizon-LTE-short.down
+Up linkfile: Verizon-LTE-short.up
+Down linkfile: Verizon-LTE-short.down
+Up linkfile: Verizon-LTE-short.up
+Average capacity: 5.04 Mbits/s
+Average throughput: 5.02 Mbits/s (99.5% utilization)
+95th percentile per-packet queueing delay: 3731 ms
+95th percentile signal delay: 4724 ms
+
+ done.
+
+
+TCP HYBLA
+Down linkfile: ATT-LTE-driving.down
+Up linkfile: ATT-LTE-driving.up
+Down linkfile: ATT-LTE-driving.down
+Up linkfile: ATT-LTE-driving.up
+Average capacity: 5.19 Mbits/s
+Average throughput: 5.18 Mbits/s (99.8% utilization)
+95th percentile per-packet queueing delay: 6833 ms
+95th percentile signal delay: 8756 ms
+
+ done.
+
+
+TCP HYBLA
+Down linkfile: TMobile-UMTS-driving.down
+Up linkfile: TMobile-UMTS-driving.up
+Down linkfile: TMobile-UMTS-driving.down
+Up linkfile: TMobile-UMTS-driving.up
+Average capacity: 2.03 Mbits/s
+Average throughput: 2.02 Mbits/s (99.9% utilization)
+95th percentile per-packet queueing delay: 18478 ms
+95th percentile signal delay: 29189 ms
+
+ done.
+
+
+TCP HYBLA
+Down linkfile: Verizon-EVDO-driving.down
+Up linkfile: Verizon-EVDO-driving.up
+Down linkfile: Verizon-EVDO-driving.down
+Up linkfile: Verizon-EVDO-driving.up
+Average capacity: 0.52 Mbits/s
+Average throughput: 0.52 Mbits/s (99.9% utilization)
+95th percentile per-packet queueing delay: 64153 ms
+95th percentile signal delay: 78124 ms
+
+ done.
+
+
+TCP HYBLA
+Down linkfile: Verizon-LTE-driving.down
+Up linkfile: Verizon-LTE-driving.up
+Down linkfile: Verizon-LTE-driving.down
+Up linkfile: Verizon-LTE-driving.up
+Average capacity: 9.91 Mbits/s
+Average throughput: 9.84 Mbits/s (99.3% utilization)
+95th percentile per-packet queueing delay: 3172 ms
+95th percentile signal delay: 6553 ms
+
+ done.
+
+
+TCP BIC
+Down linkfile: Verizon-LTE-short.down
+Up linkfile: Verizon-LTE-short.up
+Down linkfile: Verizon-LTE-short.down
+Up linkfile: Verizon-LTE-short.up
+Average capacity: 5.04 Mbits/s
+Average throughput: 5.02 Mbits/s (99.6% utilization)
+95th percentile per-packet queueing delay: 9356 ms
+95th percentile signal delay: 10477 ms
+
+ done.
+
+
+TCP BIC
+Down linkfile: ATT-LTE-driving.down
+Up linkfile: ATT-LTE-driving.up
+Down linkfile: ATT-LTE-driving.down
+Up linkfile: ATT-LTE-driving.up
+Average capacity: 5.19 Mbits/s
+Average throughput: 5.18 Mbits/s (99.9% utilization)
+95th percentile per-packet queueing delay: 8707 ms
+95th percentile signal delay: 11744 ms
+
+ done.
+
+
+TCP BIC
+Down linkfile: TMobile-UMTS-driving.down
+Up linkfile: TMobile-UMTS-driving.up
+Down linkfile: TMobile-UMTS-driving.down
+Up linkfile: TMobile-UMTS-driving.up
+Average capacity: 2.03 Mbits/s
+Average throughput: 2.02 Mbits/s (99.9% utilization)
+95th percentile per-packet queueing delay: 16918 ms
+95th percentile signal delay: 24082 ms
+
+ done.
+
+
+TCP BIC
+Down linkfile: Verizon-EVDO-driving.down
+Up linkfile: Verizon-EVDO-driving.up
+Down linkfile: Verizon-EVDO-driving.down
+Up linkfile: Verizon-EVDO-driving.up
+Average capacity: 0.52 Mbits/s
+Average throughput: 0.52 Mbits/s (99.9% utilization)
+95th percentile per-packet queueing delay: 47799 ms
+95th percentile signal delay: 80994 ms
+
+ done.
+
+
+TCP BIC
+Down linkfile: Verizon-LTE-driving.down
+Up linkfile: Verizon-LTE-driving.up
+Down linkfile: Verizon-LTE-driving.down
+Up linkfile: Verizon-LTE-driving.up
+Average capacity: 9.91 Mbits/s
+Average throughput: 9.84 Mbits/s (99.3% utilization)
+95th percentile per-packet queueing delay: 4627 ms
+95th percentile signal delay: 10028 ms
+
+ done.
+
+

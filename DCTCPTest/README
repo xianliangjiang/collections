@@ -1,0 +1,46 @@
+Instructions to replicate the experiment:
+
+* Login to your AWS account and go to AWS Management Console
+and then EC2
+
+* Search for the AMI with the name CS244_DCTCP_WIN13 and
+launch the instance with the quicklaunch security setting
+and your existing *.pem key, preferably in c1.xlarge mode or
+c1.medium (c1.medium should suffice).
+
+* Login to the instance and pull the code from our repository
+using the command below :
+
+  git clone
+  https://prachetaa@bitbucket.org/prachetaa/cs244_dctcp_win13.git
+
+* We give you the option of reproducing all the figures (including
+  the throughput vs N ) or just the figures of the paper. Hence, we
+  have two scripts, run_extended that reproduces all the figures
+  and run.sh that reproduces figures from the paper only.
+
+ Run the command .sudo ./run_extended.sh. for
+replicating all figures. (Takes about 50 minutes to
+complete)
+
+  Run the command .sudo ./run.sh. for replicating all figures
+except for throughput vs N graph. (Takes about 30 minutes to
+complete)
+
+* Do not close the terminal running the experiments as they
+stop if you close them. The experiments will complete and
+the graphs will be mailed to you and we will stop the
+instance once this is done.
+
+* NOTE : The shell scripts ask you for your email id, please
+provide them without any spaces and in the format
+xyz@zyx.com . This is for emailing the graphs back to you
+without the pain to copy them to your local machine etc.
+Furthermore, the script asks you whether you want to
+shutdown the instance automatically once the graphs are
+reproduced. Please provide a Boolean answer of 1 or 0 and we
+will shutdown the instance automatically once done. However,
+please note that any issues in between can lead to issues
+where we will not be able to send out the results via mail
+and cannot shut down the instance, so please do verify that
+the instance is shut down.

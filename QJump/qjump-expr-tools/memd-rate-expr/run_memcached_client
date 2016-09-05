@@ -1,0 +1,96 @@
+#! /bin/bash
+
+# Copyright (c) 2015, Matthew P. Grosvenor
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# * Neither the name of the project, the name of copyright holder nor the names 
+#   of its contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+if [ "$#" -lt "3" ]
+then
+    echo "usage: ./run_memcached_client <rate multipler> <<window size> <timeout>"
+    exit 1
+fi
+
+
+#parm:           bytesq:ulong
+#parm:           timeq:ulong
+#parm:           p0rate:ulong
+#parm:           p1rate:ulong
+#parm:           p2rate:ulong
+#parm:           p3rate:ulong
+#parm:           p4rate:ulong
+#parm:           p7rate:ulong
+#parm:           verbose:ulong
+
+
+
+bytesq=128
+timeq=100
+verbose=0
+p7rate=$1
+window=$2
+timeout=$3
+
+sudo killall -9  memaslap
+sleep 2
+
+tc qdisc del dev p4p2 root
+sleep 1
+
+sudo rmmod sch_qjump
+sleep 1
+
+cmd_insmod="sudo insmod ~/qjump/qjump-tc/sch_qjump.ko bytesq=${bytesq} timeq=${timeq} verbose=0 p7rate=${p7rate}"
+eval "$cmd_insmod"
+sleep 1
+
+cmd_tc="sudo tc qdisc add dev p4p2 root qjump"
+eval "$cmd_tc"
+sleep 1
+sudo tail -n 50 /var/log/syslog > ~/qjump/data/memd_rate_data/memd_prio_client_${p7rate}.syslog
+
+cd ~/qjump/qjump-app-util/
+cmd_memd="./qjau.py -p 0 -w ${window} -c \"~/libmemcached-1.0.15/clients/memaslap -s 10.10.0.13:11211 -S 1s -B -T2 -c 128 -X 64 -t${timeout}s \" &> ~/qjump/data/memed_rate_data/memd_prio_client_${p7rate}"
+echo "Running $cmd_memd ..."
+eval "$cmd_memd"
+sleep 1
+cd - &> /dev/null
+
+echo "Memecached experiement with prate=${p7rate} and window=${window}" > ~/qjump/data/memd_rate_data/memd_prio_client_${p7rate}.README 
+echo >> ~/qjump/data/memd_rate_data/memd_prio_client_${p7rate}.README
+echo $cmd_insmod >> ~/qjump/data/memd_rate_data/memd_prio_client_${p7rate.README
+echo $cmd_tc >>  ~/qjump/data/memd_rate_data/memd_prio_client_${p7rate}.README
+echo $cmd_memd >> ~/qjump/data/memd_rate_data/memd_prio_client_${p7rate}.README
+
+sudo tc qdisc del dev p4p2 root qjump
+sleep 1
+
+sudo rmmod sch_qjump
+sleep 1
+
+echo -e "\n\n\n" >>  ~/qjump/data/memd_rate_data/memd_prio_client_${p7rate}.syslog
+sudo tail -n 50 /var/log/syslog >>  ~/qjump/data/memd_rate_data/memd_prio_client_${p7rate}.syslog
+

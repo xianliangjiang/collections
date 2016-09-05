@@ -1,0 +1,15 @@
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+*.o
+*.log
+*.cmd
+*.so
+*.mod.c
+.settings
+Module.symvers
+.tmp*
+modules.order
+

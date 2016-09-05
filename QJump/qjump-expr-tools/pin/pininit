@@ -1,0 +1,109 @@
+#! /usr/bin/python
+
+# Copyright (c) 2015, Matthew P. Grosvenor
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# * Neither the name of the project, the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+import sys
+import commands
+import os
+import re
+
+#We're going to do nasty shit, need root
+if not os.geteuid() == 0:
+    sys.exit('Error: pininit must be run as root. Please run sudo pininit')
+
+#Load up the config file
+if not os.path.exists("pin.conf"):
+    sys.exit("Error: Cannot find pin.conf")
+
+#Pin conf (should) contains valid python setting "default" and "pinned" groups up
+default = []
+pinned  = []
+pinconf = "".join(open("pin.conf").readlines())
+exec(pinconf)
+
+if default == []:
+    sys.exit("Error: Default CPU list is empty. Check that pin.conf has the line default = [ <CPU NUMS> ] in it")
+
+if pinned == []:
+    sys.exit("Error: Pinned CPU list is empty. Check that pin.conf has the line pinned = [ <CPUS NUMs> ] in it")
+
+#first build the hex mask
+hexcpumask = map(lambda x: 1 << x , default)
+hexcpumask = reduce(lambda x,y: x + y, hexcpumask)
+print hexcpumask
+
+#Get the current list of processes 
+out = commands.getoutput('ps -A')
+lines = out.split("\n")
+findpid = re.compile("\s*(\d*)\s.*")
+pids = []
+for line in lines:
+    result = findpid.search(line)
+    if(result):
+        if(result.group(1)):
+            pids.append(result.group(1))
+
+#Move all pids on the defualt CPU set
+for pid in pids:
+    cmd = "taskset -p %x %s" % (hexcpumask,pid)
+    print "Running \"" + cmd + "\" ..."
+    out = commands.getoutput(cmd)
+
+
+#Get all the IRQs
+procirqs = open("/proc/interrupts").readlines()
+findirq = re.compile("\s*(\d*):.*")
+irqs = []
+for line in procirqs:
+    result = findirq.search(line)
+    if(result):
+        if(result.group(1)):
+            irqs.append(result.group(1))
+irqs = []
+
+#Move all irqs on the defualt CPU set
+for irq in irqs:
+    cmd = "echo %x > /proc/irq/%s/smp_affinity" % (hexcpumask,irq)
+    print "Running \"" + cmd + "\" ..."
+    out = commands.getoutput(cmd)
+
+#Set the defualt irq affinit to the default cpu set
+cmd = "echo %x > /proc/irq/default_smp_affinity" % (hexcpumask)
+#print "Running \"" + cmd + "\" ..."
+#out = commands.getoutput(cmd)
+
+
+
+#Put this somewhere global so that pin can use it
+pinned = open("/tmp/pinned","w+")
+pinned.write("inuse=[" + ",".join(map(lambda x: str(x), default)) + "] \n")
+pinned.close()
+
+
+
